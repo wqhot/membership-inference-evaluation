@@ -8,6 +8,7 @@ import input_data_class
 import argparse
 sys.path.append('../')
 from membership_inference_attacks import black_box_benchmarks
+from privacy_risk_score_utils import calculate_risk_score
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run membership inference attacks')
@@ -45,3 +46,7 @@ if __name__ == "__main__":
     MIA = black_box_benchmarks(shadow_train_performance,shadow_test_performance,
                          target_train_performance,target_test_performance,num_classes=num_classes)
     MIA._mem_inf_benchmarks()
+
+    risk_score = calculate_risk_score(MIA.s_tr_m_entr, MIA.s_te_m_entr, MIA.s_tr_labels, MIA.s_te_labels, MIA.t_tr_m_entr, MIA.t_tr_labels)
+
+    print("Risk score: ", risk_score)

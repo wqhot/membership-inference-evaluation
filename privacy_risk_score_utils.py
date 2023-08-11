@@ -25,7 +25,7 @@ def distrs_compute(tr_values, te_values, tr_labels, te_labels, num_bins=5, log_b
         all_list = np.concatenate((tr_list, te_list))
         max_v, min_v = np.amax(all_list), np.amin(all_list)
         
-        plt.subplot(sqr_num, sqr_num, i+1)
+        plt.subplot(int(sqr_num), int(sqr_num), i+1)
         if log_bins:
             bins = np.logspace(np.log10(min_v), np.log10(max_v),num_bins+1)
             weights = np.ones_like(tr_list)/float(len(tr_list))
@@ -45,7 +45,8 @@ def distrs_compute(tr_values, te_values, tr_labels, te_labels, num_bins=5, log_b
         all_bins.append(bins)
     if plot_name == None:
         plot_name='./tmp'
-    plt.savefig(plot_name+'.png', bbox_inches='tight')
+    # plt.savefig(plot_name+'.png', bbox_inches='tight')
+    plt.show()
     tr_distrs, te_distrs, all_bins = np.array(tr_distrs), np.array(te_distrs), np.array(all_bins)
     return tr_distrs, te_distrs, all_bins
 
