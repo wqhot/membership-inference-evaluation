@@ -12,6 +12,15 @@
             "console": "integratedTerminal",
             "cwd": "${fileDirname}",
             "justMyCode": true
-        }
+        },
+        {
+            "name": "Python: MemGuard MIA",
+            "type": "python",
+            "request": "launch",
+            "program": "MIA_evaluate.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/MemGuard",
+            "justMyCode": true
+        },
     ]
 }

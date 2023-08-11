@@ -8,32 +8,32 @@ class black_box_benchmarks(object):
         '''
         each input contains both model predictions (shape: num_data*num_classes) and ground-truth labels. 
         '''
-        self.num_classes = num_classes
+        self.num_classes = num_classes # 类别数
         
-        self.s_tr_outputs, self.s_tr_labels = shadow_train_performance
-        self.s_te_outputs, self.s_te_labels = shadow_test_performance
-        self.t_tr_outputs, self.t_tr_labels = target_train_performance
-        self.t_te_outputs, self.t_te_labels = target_test_performance
+        self.s_tr_outputs, self.s_tr_labels = shadow_train_performance # 影子模型训练集预测结果和标签
+        self.s_te_outputs, self.s_te_labels = shadow_test_performance   # 影子模型测试集预测结果和标签
+        self.t_tr_outputs, self.t_tr_labels = target_train_performance # 目标模型训练集预测结果和标签
+        self.t_te_outputs, self.t_te_labels = target_test_performance   # 目标模型测试集预测结果和标签
         
-        self.s_tr_corr = (np.argmax(self.s_tr_outputs, axis=1)==self.s_tr_labels).astype(int)
-        self.s_te_corr = (np.argmax(self.s_te_outputs, axis=1)==self.s_te_labels).astype(int)
-        self.t_tr_corr = (np.argmax(self.t_tr_outputs, axis=1)==self.t_tr_labels).astype(int)
-        self.t_te_corr = (np.argmax(self.t_te_outputs, axis=1)==self.t_te_labels).astype(int)
+        self.s_tr_corr = (np.argmax(self.s_tr_outputs, axis=1)==self.s_tr_labels).astype(int) # 影子模型训练集预测正确的标签
+        self.s_te_corr = (np.argmax(self.s_te_outputs, axis=1)==self.s_te_labels).astype(int) # 影子模型测试集预测正确的标签
+        self.t_tr_corr = (np.argmax(self.t_tr_outputs, axis=1)==self.t_tr_labels).astype(int) # 目标模型训练集预测正确的标签
+        self.t_te_corr = (np.argmax(self.t_te_outputs, axis=1)==self.t_te_labels).astype(int) # 目标模型测试集预测正确的标签
         
-        self.s_tr_conf = np.array([self.s_tr_outputs[i, self.s_tr_labels[i]] for i in range(len(self.s_tr_labels))])
-        self.s_te_conf = np.array([self.s_te_outputs[i, self.s_te_labels[i]] for i in range(len(self.s_te_labels))])
-        self.t_tr_conf = np.array([self.t_tr_outputs[i, self.t_tr_labels[i]] for i in range(len(self.t_tr_labels))])
-        self.t_te_conf = np.array([self.t_te_outputs[i, self.t_te_labels[i]] for i in range(len(self.t_te_labels))])
+        self.s_tr_conf = np.array([self.s_tr_outputs[i, self.s_tr_labels[i]] for i in range(len(self.s_tr_labels))]) # 影子模型训练集预测正确的标签的置信度
+        self.s_te_conf = np.array([self.s_te_outputs[i, self.s_te_labels[i]] for i in range(len(self.s_te_labels))]) # 影子模型测试集预测正确的标签的置信度
+        self.t_tr_conf = np.array([self.t_tr_outputs[i, self.t_tr_labels[i]] for i in range(len(self.t_tr_labels))]) # 目标模型训练集预测正确的标签的置信度
+        self.t_te_conf = np.array([self.t_te_outputs[i, self.t_te_labels[i]] for i in range(len(self.t_te_labels))]) # 目标模型测试集预测正确的标签的置信度
         
-        self.s_tr_entr = self._entr_comp(self.s_tr_outputs)
-        self.s_te_entr = self._entr_comp(self.s_te_outputs)
-        self.t_tr_entr = self._entr_comp(self.t_tr_outputs)
-        self.t_te_entr = self._entr_comp(self.t_te_outputs)
+        self.s_tr_entr = self._entr_comp(self.s_tr_outputs) # 影子模型训练集预测结果的熵
+        self.s_te_entr = self._entr_comp(self.s_te_outputs) # 影子模型测试集预测结果的熵
+        self.t_tr_entr = self._entr_comp(self.t_tr_outputs) # 目标模型训练集预测结果的熵
+        self.t_te_entr = self._entr_comp(self.t_te_outputs) # 目标模型测试集预测结果的熵
         
-        self.s_tr_m_entr = self._m_entr_comp(self.s_tr_outputs, self.s_tr_labels)
-        self.s_te_m_entr = self._m_entr_comp(self.s_te_outputs, self.s_te_labels)
-        self.t_tr_m_entr = self._m_entr_comp(self.t_tr_outputs, self.t_tr_labels)
-        self.t_te_m_entr = self._m_entr_comp(self.t_te_outputs, self.t_te_labels)
+        self.s_tr_m_entr = self._m_entr_comp(self.s_tr_outputs, self.s_tr_labels) # 影子模型训练集预测结果的改进熵
+        self.s_te_m_entr = self._m_entr_comp(self.s_te_outputs, self.s_te_labels) # 影子模型测试集预测结果的改进熵
+        self.t_tr_m_entr = self._m_entr_comp(self.t_tr_outputs, self.t_tr_labels) # 目标模型训练集预测结果的改进熵
+        self.t_te_m_entr = self._m_entr_comp(self.t_te_outputs, self.t_te_labels) # 目标模型测试集预测结果的改进熵
         
     
     def _log_value(self, probs, small_value=1e-30):

@@ -18,13 +18,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     dataset = args.dataset
-    input_data=input_data_class.InputData(dataset=dataset)
-    (x_target,y_target,l_target) =input_data.input_data_attacker_evaluate()
-    npz_data = np.load('./saved_predictions/'+dataset+'_target_predictions.npz')
+    input_data=input_data_class.InputData(dataset=dataset) # 读取数据集配置（数据集位置位置、各数据子集的索引位置）生成数据对象
+    (x_target,y_target,l_target) =input_data.input_data_attacker_evaluate() # 从数据集中抽取用于攻击的数据
+    npz_data = np.load('./saved_predictions/'+dataset+'_target_predictions.npz') # 预测结果为每个标签的置信度
     if args.defended==1:
         target_predictions = npz_data['defense_output']
     else:
         target_predictions = npz_data['tc_output']
+    # l_target==1表示训练集，l_target==0表示测试集
     target_train_performance = (target_predictions[l_target==1], y_target[l_target==1].astype('int32'))
     target_test_performance = (target_predictions[l_target==0], y_target[l_target==0].astype('int32'))
 
@@ -34,7 +35,7 @@ if __name__ == "__main__":
         shadow_predictions = npz_data['defense_output']
     else:
         shadow_predictions = npz_data['tc_output']
-
+    # 影子模型的训练集和测试集
     shadow_train_performance = (shadow_predictions[l_shadow==1], y_shadow[l_shadow==1].astype('int32'))
     shadow_test_performance = (shadow_predictions[l_shadow==0], y_shadow[l_shadow==0].astype('int32'))
     
@@ -49,4 +50,4 @@ if __name__ == "__main__":
 
     risk_score = calculate_risk_score(MIA.s_tr_m_entr, MIA.s_te_m_entr, MIA.s_tr_labels, MIA.s_te_labels, MIA.t_tr_m_entr, MIA.t_tr_labels)
 
-    print("Risk score: ", risk_score)
+    print("Risk score: ", np.average(risk_score))

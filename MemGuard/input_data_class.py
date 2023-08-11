@@ -13,32 +13,32 @@ class InputData():
         self.config.read('config.ini')
 
 
-        self.data_filepath=str(self.config[dataset]['all_data_path'])
-        self.index_filepath=str(self.config[dataset]['shuffle_index'])
+        self.data_filepath=str(self.config[dataset]['all_data_path']) # 完整数据集的路径
+        self.index_filepath=str(self.config[dataset]['shuffle_index']) # 打乱后的索引的路径
 
-        self.user_training_data_range=self.config[dataset]['user_training_data_index_range']
+        self.user_training_data_range=self.config[dataset]['user_training_data_index_range'] # 用户训练数据的索引范围
         self.user_training_data_range=ast.literal_eval(self.user_training_data_range)
 
-        self.user_testing_data_range=self.config[dataset]['user_testing_data_index_range']
+        self.user_testing_data_range=self.config[dataset]['user_testing_data_index_range'] # 用户测试数据的索引范围
         self.user_testing_data_range=ast.literal_eval(self.user_testing_data_range)
 
-        self.defense_member_data_index_range=self.config[dataset]['defense_member_data_index_range']
+        self.defense_member_data_index_range=self.config[dataset]['defense_member_data_index_range'] # 防御成员数据的索引范围
         self.defense_member_data_index_range=ast.literal_eval(self.defense_member_data_index_range)
 
-        self.defense_nonmember_data_index_range=self.config[dataset]['defense_nonmember_data_index_range']
+        self.defense_nonmember_data_index_range=self.config[dataset]['defense_nonmember_data_index_range'] # 防御非成员数据的索引范围
         self.defense_nonmember_data_index_range=ast.literal_eval(self.defense_nonmember_data_index_range)
 
 
-        self.attacker_train_member_data_range=self.config[dataset]['attacker_train_member_data_range']
+        self.attacker_train_member_data_range=self.config[dataset]['attacker_train_member_data_range'] # 攻击者训练成员数据的索引范围
         self.attacker_train_member_data_range=ast.literal_eval(self.attacker_train_member_data_range)
 
-        self.attacker_train_nonmember_data_range=self.config[dataset]['attacker_train_nonmember_data_range']
+        self.attacker_train_nonmember_data_range=self.config[dataset]['attacker_train_nonmember_data_range'] # 攻击者训练非成员数据的索引范围
         self.attacker_train_nonmember_data_range=ast.literal_eval(self.attacker_train_nonmember_data_range)
 
-        self.attacker_evaluate_member_data_range=self.config[dataset]['attacker_evaluate_member_data_range']
+        self.attacker_evaluate_member_data_range=self.config[dataset]['attacker_evaluate_member_data_range'] # 攻击者评估成员数据的索引范围
         self.attacker_evaluate_member_data_range=ast.literal_eval(self.attacker_evaluate_member_data_range)
 
-        self.attacker_evaluate_nonmember_data_range=self.config[dataset]['attacker_evaluate_nonmember_data_range']
+        self.attacker_evaluate_nonmember_data_range=self.config[dataset]['attacker_evaluate_nonmember_data_range'] # 攻击者评估非成员数据的索引范围
         self.attacker_evaluate_nonmember_data_range=ast.literal_eval(self.attacker_evaluate_nonmember_data_range)
 
 
@@ -99,16 +99,21 @@ class InputData():
         #print("Attacker evaluate member data range: {}".format(self.attacker_evaluate_member_data_range))
         #print("Attacker evaluate nonmember data range: {}".format(self.attacker_evaluate_nonmember_data_range))
         npzdata=np.load(self.data_filepath)
-        x_data=npzdata['x'][:,:]
-        y_data=npzdata['y'][:]
+        x_data=npzdata['x'][:,:] # (5010, 446)
+        y_data=npzdata['y'][:]   # (5010,)
         npzdata_index=np.load(self.index_filepath)
-        index_data=npzdata_index['x']
-
+        index_data=npzdata_index['x'] # 打乱后的数据的index
+        # 从x_data中去除用于攻击评估的成员数据
         x_evaluate_member_attacker=x_data[index_data[int(self.attacker_evaluate_member_data_range["start"]):int(self.attacker_evaluate_member_data_range["end"])],:]
+        # 从x_data中去除用于攻击评估的非成员数据
         x_evaluate_nonmember_attacker=x_data[index_data[int(self.attacker_evaluate_nonmember_data_range["start"]):int(self.attacker_evaluate_nonmember_data_range["end"])],:]
+        # 从y_data中去除用于攻击评估的成员数据
         y_evaluate_member_attacker=y_data[index_data[int(self.attacker_evaluate_member_data_range["start"]):int(self.attacker_evaluate_member_data_range["end"])]]
+        # 从y_data中去除用于攻击评估的非成员数据
         y_evaluate_nonmumber_attacker=y_data[index_data[int(self.attacker_evaluate_nonmember_data_range["start"]):int(self.attacker_evaluate_nonmember_data_range["end"])]]
+        # 将成员数据和非成员数据合并 作为攻击评估的输入数据
         x_evaluate_attacker=np.concatenate((x_evaluate_member_attacker,x_evaluate_nonmember_attacker),axis=0)
+        # 将成员数据和非成员数据合并 作为攻击评估的输入数据的标签
         y_evaluate_attacker=np.concatenate((y_evaluate_member_attacker,y_evaluate_nonmumber_attacker),axis=0)
         y_evaluate_attacker=y_evaluate_attacker-1.0
         label_evaluate_attacker=np.zeros([x_evaluate_attacker.shape[0]],dtype=np.intc)
